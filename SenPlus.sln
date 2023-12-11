@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34316.72
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SenPlus", "SenPlus.csproj", "{DBD046E4-001E-4F74-BD13-C32580F8C859}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DBD046E4-001E-4F74-BD13-C32580F8C859}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBD046E4-001E-4F74-BD13-C32580F8C859}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBD046E4-001E-4F74-BD13-C32580F8C859}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBD046E4-001E-4F74-BD13-C32580F8C859}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {044D28D0-B16F-4C27-AFA7-725266F150B2}
+	EndGlobalSection
+EndGlobal
