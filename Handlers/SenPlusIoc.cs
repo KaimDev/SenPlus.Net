@@ -1,7 +1,12 @@
-﻿namespace SenPlus.Core;
+﻿namespace SenPlus.Handlers;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
+using SenPlus.Builders;
+using SenPlus.Commands;
+using SenPlus.Interfaces;
+
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types.Enums;
@@ -14,10 +19,14 @@ public static class SenPlusIoc
   {
     var services = new ServiceCollection();
 
-    // Register the bot
-    var SenPlusBot = NewSenPlusBot();
-    services.AddSingleton<TelegramBotClient>(SenPlusBot);
+    // Register Token
+    IBotToken Token = GetTokenFromSettings();
+    services.AddSingleton(typeof(IBotToken), Token);
 
+    // Register the bot
+    var SenPlusBot = NewSenPlusBot(Token);
+    services.AddSingleton(typeof(TelegramBotClient), SenPlusBot);
+    
     // Register the ReceiverOptions
     services.AddSingleton(new ReceiverOptions
     {
@@ -25,6 +34,15 @@ public static class SenPlusIoc
     });
 
     ServiceProvider = services.BuildServiceProvider();
+  }
+
+  public static SenPlusBuilder AddReceivingOptions(this SenPlusBuilder Builder)
+  {
+    if (ServiceProvider is null)
+      throw new NullReferenceException("ServiceProvider is null");
+
+    Builder._ReceiverOptions = ServiceProvider.GetService<ReceiverOptions>();
+    return Builder;
   }
 
   public static TelegramBotClient GetBot()
@@ -35,22 +53,17 @@ public static class SenPlusIoc
     return ServiceProvider!.GetService<TelegramBotClient>()!;
   }
 
-  public static SenPlusBuilder UseReceivingOptions(this SenPlusBuilder Builder)
+  private static TelegramBotClient NewSenPlusBot(IBotToken BotToken)
   {
-    if (ServiceProvider is null)
-      throw new NullReferenceException("ServiceProvider is null");
-
-    Builder._ReceiverOptions = ServiceProvider.GetService<ReceiverOptions>();
-    return Builder;
+    return new TelegramBotClient(BotToken.Token);
   }
 
-  private static TelegramBotClient NewSenPlusBot()
+  private static IBotToken GetTokenFromSettings()
   {
     var Config = new ConfigurationBuilder()
       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
         .Build();
 
-    string Token = Config.GetSection("ConnectionString").GetSection("Token").Value!;
-    return new TelegramBotClient(Token);
+    return new BotToken(Config.GetSection("ConnectionString").GetSection("Token").Value!);
   }
 }

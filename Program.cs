@@ -1,11 +1,13 @@
-﻿using SenPlus.Core;
+﻿using SenPlus.Builders;
+using SenPlus.Handlers;
 
 SenPlusIoc.Configure();
 
 var App = new SenPlusBuilder(SenPlusIoc.GetBot())
-  .UseHandleUpdate()
-  .UseHandlePollingError()
-  .UseReceivingOptions()
+  .AddHandleUpdate()
+  .AddHandlePollingError()
+  .AddReceivingOptions()
+  .AddCommands()
   .Build();
 
 await App.StartReceivingAsync();

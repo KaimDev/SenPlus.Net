@@ -1,19 +1,27 @@
-﻿namespace SenPlus.Core;
+﻿namespace SenPlus.Builders;
 
+using SenPlus.Commands;
+using SenPlus.Handlers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
 public static class SenPlusBuilderOptions
 {
-  public static SenPlusBuilder UseHandleUpdate(this SenPlusBuilder Builder)
+  public static SenPlusBuilder AddHandleUpdate(this SenPlusBuilder Builder)
   {
     Builder._HandleUpdate = HandleUpdateAsync;
     return Builder;
   }
 
-  public static SenPlusBuilder UseHandlePollingError(this SenPlusBuilder Builder)
+  public static SenPlusBuilder AddHandlePollingError(this SenPlusBuilder Builder)
   {
     Builder._HandlePollingError = SenPlusError.HandlePollingErrorAsync;
+    return Builder;
+  }
+
+  public static SenPlusBuilder AddCommands(this SenPlusBuilder Builder)
+  {
+    Builder._Bot.SetMyCommandsAsync(SenCommandList.Commands);
     return Builder;
   }
 

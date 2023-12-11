@@ -1,4 +1,4 @@
-﻿namespace SenPlus.Core;
+﻿namespace SenPlus.Handlers;
 
 using Telegram.Bot.Exceptions;
 using Telegram.Bot;
