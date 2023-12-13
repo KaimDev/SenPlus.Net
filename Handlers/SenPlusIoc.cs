@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using SenPlus.Builders;
-using SenPlus.Commands;
 using SenPlus.Interfaces;
 
 using Telegram.Bot;

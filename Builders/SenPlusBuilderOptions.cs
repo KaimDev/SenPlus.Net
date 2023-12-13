@@ -1,6 +1,8 @@
 ﻿namespace SenPlus.Builders;
 
 using SenPlus.Commands;
+using SenPlus.Constants;
+using SenPlus.Core;
 using SenPlus.Handlers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -19,9 +21,20 @@ public static class SenPlusBuilderOptions
     return Builder;
   }
 
-  public static SenPlusBuilder AddCommands(this SenPlusBuilder Builder)
+  public static SenPlusBuilder AddCommandList(this SenPlusBuilder Builder)
   {
     Builder._Bot.SetMyCommandsAsync(SenCommandList.Commands);
+    return Builder;
+  }
+
+  public static SenPlusBuilder AddCommandMethods(this SenPlusBuilder Builder)
+  {
+    Builder._Commands = new()
+    {
+      { SenCommandNames.start, new StartCommand().ExecuteCommandAsync },
+      { SenCommandNames.help,  new HelpCommand().ExecuteCommandAsync  }
+    };
+
     return Builder;
   }
 
@@ -34,14 +47,32 @@ public static class SenPlusBuilderOptions
     if (message.Text is not { } messageText)
       return;
 
-    var chatId = message.Chat.Id;
+    if (messageText.StartsWith('/') && SenPlus._Commands is not null)
+    {
+      try
+      {
+        var Command = SenPlus._Commands[messageText];
+        await Command(BotClient, Update, CancellationToken);
+      }
+      catch (KeyNotFoundException)
+      {
+        await BotClient.SendTextMessageAsync(
+          chatId: message.Chat.Id,
+          text: "Command not found",
+          cancellationToken: CancellationToken);
+      }
+    }
+    else
+    {
+      var chatId = message.Chat.Id;
 
-    Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
+      Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
 
-    // Echo received message text
-    Message SentMessage = await BotClient.SendTextMessageAsync(
-        chatId: chatId,
-        text: "You said:\n" + messageText,
-        cancellationToken: CancellationToken);
+      // Echo received message text
+      await BotClient.SendTextMessageAsync(
+          chatId: chatId,
+          text: "You said:\n" + messageText,
+          cancellationToken: CancellationToken);
+    }
   }
 }

@@ -7,7 +7,8 @@ var App = new SenPlusBuilder(SenPlusIoc.GetBot())
   .AddHandleUpdate()
   .AddHandlePollingError()
   .AddReceivingOptions()
-  .AddCommands()
+  .AddCommandList()
+  .AddCommandMethods()
   .Build();
 
 await App.StartReceivingAsync();

@@ -1,13 +1,13 @@
-﻿using Telegram.Bot.Types;
+﻿namespace SenPlus.Commands;
 
-namespace SenPlus.Commands;
+using Telegram.Bot.Types;
+using static SenPlus.Constants.SenCommandNames;
 
 public static class SenCommandList
 {
-  public static readonly BotCommand[] Commands =
+  public static readonly IEnumerable<BotCommand> Commands = new List<BotCommand>
   {
-    new BotCommand { Command = "start", Description = "Start the bot"     },
-    new BotCommand { Command = "help",  Description = "Show help"         },
-    new BotCommand { Command = "echo",  Description = "Echo the message." },
+    new BotCommand { Command = start, Description = "Start the bot" },
+    new BotCommand { Command = help,  Description = "Show help"     },
   };
 }

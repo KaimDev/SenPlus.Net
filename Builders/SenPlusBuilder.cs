@@ -7,18 +7,19 @@ using Telegram.Bot.Types;
 
 public class SenPlusBuilder
 {
-    public TelegramBotClient _Bot;
-    public Func<ITelegramBotClient, Update, CancellationToken, Task>? _HandleUpdate;
-    public Func<ITelegramBotClient, Exception, CancellationToken, Task>? _HandlePollingError;
-    public ReceiverOptions? _ReceiverOptions;
+  public TelegramBotClient _Bot;
+  public Func<ITelegramBotClient, Update, CancellationToken, Task>? _HandleUpdate;
+  public Func<ITelegramBotClient, Exception, CancellationToken, Task>? _HandlePollingError;
+  public ReceiverOptions? _ReceiverOptions;
+  public Dictionary<string, Func<ITelegramBotClient, Update, CancellationToken, Task>>? _Commands;
 
-    public SenPlusBuilder(TelegramBotClient bot)
-    {
-        _Bot = bot;
-    }
+  public SenPlusBuilder(TelegramBotClient bot)
+  {
+    _Bot = bot;
+  }
 
-    public SenPlus Build()
-    {
-        return new SenPlus(_Bot, _HandleUpdate, _HandlePollingError, _ReceiverOptions);
-    }
+  public SenPlus Build()
+  {
+    return new SenPlus(_Bot, _HandleUpdate, _HandlePollingError, _ReceiverOptions, _Commands);
+  }
 }

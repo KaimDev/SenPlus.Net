@@ -14,6 +14,8 @@ public class SenPlus
   
   public ReceiverOptions? _ReceiverOptions { get; set; }
 
+  public static Dictionary<string, Func<ITelegramBotClient, Update, CancellationToken, Task>>? _Commands { get; set; } = null;
+
   public SenPlus(TelegramBotClient bot)
   {
     _Bot = bot;
@@ -23,12 +25,14 @@ public class SenPlus
     TelegramBotClient Bot,
     Func<ITelegramBotClient, Update, CancellationToken, Task>? HandleUpdate = null,
     Func<ITelegramBotClient, Exception, CancellationToken, Task>? HandlePollingError = null,
-    ReceiverOptions? ReceiverOptions = null)
+    ReceiverOptions? ReceiverOptions = null,
+    Dictionary<string, Func<ITelegramBotClient, Update, CancellationToken, Task>>? Commands = null)
   {
     _Bot = Bot;
     _HandleUpdate = HandleUpdate;
     _HandlePollingError = HandlePollingError;
     _ReceiverOptions = ReceiverOptions;
+    _Commands = Commands;
   }
 
   public async Task StartReceivingAsync()
