@@ -35,15 +35,6 @@ public static class SenPlusIoc
     ServiceProvider = services.BuildServiceProvider();
   }
 
-  public static SenPlusBuilder AddReceivingOptions(this SenPlusBuilder Builder)
-  {
-    if (ServiceProvider is null)
-      throw new NullReferenceException("ServiceProvider is null");
-
-    Builder._ReceiverOptions = ServiceProvider.GetService<ReceiverOptions>();
-    return Builder;
-  }
-
   public static TelegramBotClient GetBot()
   {
     if (ServiceProvider is null)

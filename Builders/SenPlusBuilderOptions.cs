@@ -1,10 +1,12 @@
 ﻿namespace SenPlus.Builders;
 
+using Microsoft.Extensions.DependencyInjection;
 using SenPlus.Commands;
 using SenPlus.Constants;
 using SenPlus.Core;
 using SenPlus.Handlers;
 using Telegram.Bot;
+using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 
 public static class SenPlusBuilderOptions
@@ -18,6 +20,15 @@ public static class SenPlusBuilderOptions
   public static SenPlusBuilder AddHandlePollingError(this SenPlusBuilder Builder)
   {
     Builder._HandlePollingError = SenPlusError.HandlePollingErrorAsync;
+    return Builder;
+  }
+
+  public static SenPlusBuilder AddReceivingOptions(this SenPlusBuilder Builder)
+  {
+    if (SenPlusIoc.ServiceProvider is null)
+      throw new NullReferenceException("ServiceProvider is null");
+
+    Builder._ReceiverOptions = SenPlusIoc.ServiceProvider.GetService<ReceiverOptions>();
     return Builder;
   }
 
