@@ -10,6 +10,9 @@ using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 
+using static SenPlus.Constants.SenMessageNames;
+using static SenPlus.Resources.BotMessages;
+
 public static class SenPlusBuilderOptions
 {
   public static SenPlusBuilder AddHandleUpdate(this SenPlusBuilder Builder)
@@ -52,6 +55,8 @@ public static class SenPlusBuilderOptions
 
   private static async Task HandleUpdateAsync(ITelegramBotClient BotClient, Update Update, CancellationToken CancellationToken)
   {
+    string Response = string.Empty;
+
     if (Update.IsCommand())
     {
       if (SenPlus._Commands is not null)
@@ -60,13 +65,11 @@ public static class SenPlusBuilderOptions
         {
           var Command = SenPlus._Commands[Update.GetCommandName()];
           await Command(BotClient, Update, CancellationToken);
+          return;
         }
         catch (KeyNotFoundException)
         {
-          await BotClient.SendTextMessageAsync(
-            chatId: Update.Message!.Chat.Id,
-            text: "Command not found",
-            cancellationToken: CancellationToken);
+          Response = GetMessageByKey(CommandNotFound)!;
         }
       }
     }
@@ -76,18 +79,16 @@ public static class SenPlusBuilderOptions
 
       Console.WriteLine($"Received a '{Update.Message.Text}' message in chat {chatId}.");
 
-      // Echo received message text
-      await BotClient.SendTextMessageAsync(
-          chatId: chatId,
-          text: "You said:\n" + Update.Message.Text,
-          cancellationToken: CancellationToken);
+      Response = "You said:\n" + Update.Message.Text;
     }
     else
     {
-      await BotClient.SendTextMessageAsync(
-        chatId: Update.ChatMember!.From.Id,
-        text: "Not is command or message",
-        cancellationToken: CancellationToken);
+      Response = GetMessageByKey(NotIsCommandOrMessage)!;
     }
+
+    await BotClient.SendTextMessageAsync(
+      chatId: Update.Message!.Chat.Id,
+      text: Response,
+      cancellationToken: CancellationToken);
   }
 }
