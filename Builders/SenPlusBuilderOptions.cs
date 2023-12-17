@@ -5,6 +5,7 @@ using SenPlus.Commands;
 using SenPlus.Constants;
 using SenPlus.Core;
 using SenPlus.Handlers;
+using SenPlus.Helpers;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
@@ -51,39 +52,42 @@ public static class SenPlusBuilderOptions
 
   private static async Task HandleUpdateAsync(ITelegramBotClient BotClient, Update Update, CancellationToken CancellationToken)
   {
-    // Only process Message updates: https://core.telegram.org/bots/api#message
-    if (Update.Message is not { } message)
-      return;
-    // Only process text messages
-    if (message.Text is not { } messageText)
-      return;
-
-    if (messageText.StartsWith('/') && SenPlus._Commands is not null)
+    if (Update.IsCommand())
     {
-      try
+      if (SenPlus._Commands is not null)
       {
-        var Command = SenPlus._Commands[messageText];
-        await Command(BotClient, Update, CancellationToken);
-      }
-      catch (KeyNotFoundException)
-      {
-        await BotClient.SendTextMessageAsync(
-          chatId: message.Chat.Id,
-          text: "Command not found",
-          cancellationToken: CancellationToken);
+        try
+        {
+          var Command = SenPlus._Commands[Update.GetCommandName()];
+          await Command(BotClient, Update, CancellationToken);
+        }
+        catch (KeyNotFoundException)
+        {
+          await BotClient.SendTextMessageAsync(
+            chatId: Update.Message!.Chat.Id,
+            text: "Command not found",
+            cancellationToken: CancellationToken);
+        }
       }
     }
-    else
+    else if (Update.IsMessageNotEmpty())
     {
-      var chatId = message.Chat.Id;
+      var chatId = Update.Message!.Chat.Id;
 
-      Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
+      Console.WriteLine($"Received a '{Update.Message.Text}' message in chat {chatId}.");
 
       // Echo received message text
       await BotClient.SendTextMessageAsync(
           chatId: chatId,
-          text: "You said:\n" + messageText,
+          text: "You said:\n" + Update.Message.Text,
           cancellationToken: CancellationToken);
+    }
+    else
+    {
+      await BotClient.SendTextMessageAsync(
+        chatId: Update.ChatMember!.From.Id,
+        text: "Not is command or message",
+        cancellationToken: CancellationToken);
     }
   }
 }
