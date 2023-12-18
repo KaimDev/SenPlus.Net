@@ -1,7 +1,7 @@
-using Telegram.Bot;
+namespace SenPlus.Helpers;
+
 using Telegram.Bot.Types;
 
-namespace SenPlus.Helpers;
 
 public static class TelegramUpdateExtensions
 {
@@ -17,8 +17,7 @@ public static class TelegramUpdateExtensions
 
   public static bool IsCommand(this Update Update)
   {
-    Update.IsMessageNotEmpty();
-    return Update.Message!.Text!.StartsWith('/');
+    return Update.IsMessageNotEmpty() && Update.Message!.Text!.StartsWith('/');
   }
 
   public static string GetCommandName(this Update Update)

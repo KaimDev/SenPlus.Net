@@ -55,7 +55,10 @@ public static class SenPlusBuilderOptions
 
   private static async Task HandleUpdateAsync(ITelegramBotClient BotClient, Update Update, CancellationToken CancellationToken)
   {
-    string Response = string.Empty;
+    SendTextMessageHelper SendObject = new()
+    {
+      chatId = Update.Message!.Chat.Id
+    };
 
     if (Update.IsCommand())
     {
@@ -69,7 +72,7 @@ public static class SenPlusBuilderOptions
         }
         catch (KeyNotFoundException)
         {
-          Response = GetMessageByKey(CommandNotFound)!;
+          SendObject.text = GetMessageByKey(CommandNotFound)!;
         }
       }
     }
@@ -79,16 +82,14 @@ public static class SenPlusBuilderOptions
 
       Console.WriteLine($"Received a '{Update.Message.Text}' message in chat {chatId}.");
 
-      Response = "You said:\n" + Update.Message.Text;
+      SendObject.text = "You said:\n" + Update.Message.Text;
     }
     else
     {
-      Response = GetMessageByKey(NotIsCommandOrMessage)!;
+      SendObject.text = GetMessageByKey(NotIsCommandOrMessage)!;
+      SendObject.replyToMessageId = Update.Message!.MessageId;
     }
 
-    await BotClient.SendTextMessageAsync(
-      chatId: Update.Message!.Chat.Id,
-      text: Response,
-      cancellationToken: CancellationToken);
+    await BotClient.SendTextMesageWithObjectAsync(SendObject, CancellationToken);
   }
 }
