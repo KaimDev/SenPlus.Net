@@ -1,17 +1,20 @@
 ﻿namespace SenPlus.Builders;
 
 using Microsoft.Extensions.DependencyInjection;
+
 using SenPlus.Commands;
+
 using SenPlus.Constants;
-using SenPlus.Core;
+
 using SenPlus.Handlers;
+
 using SenPlus.Helpers;
+
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 
-using static SenPlus.Constants.SenMessageNames;
-using static SenPlus.Resources.BotMessages;
+using static SenPlus.Handlers.HandleMessageTypes;
 
 public static class SenPlusBuilderOptions
 {
@@ -55,41 +58,13 @@ public static class SenPlusBuilderOptions
 
   private static async Task HandleUpdateAsync(ITelegramBotClient BotClient, Update Update, CancellationToken CancellationToken)
   {
-    SendTextMessageHelper SendObject = new()
-    {
-      chatId = Update.Message!.Chat.Id
-    };
-
     if (Update.IsCommand())
     {
-      if (SenPlus._Commands is not null)
-      {
-        try
-        {
-          var Command = SenPlus._Commands[Update.GetCommandName()];
-          await Command(BotClient, Update, CancellationToken);
-          return;
-        }
-        catch (KeyNotFoundException)
-        {
-          SendObject.text = GetMessageByKey(CommandNotFound)!;
-        }
-      }
-    }
-    else if (Update.IsMessageNotEmpty())
-    {
-      var chatId = Update.Message!.Chat.Id;
-
-      Console.WriteLine($"Received a '{Update.Message.Text}' message in chat {chatId}.");
-
-      SendObject.text = "You said:\n" + Update.Message.Text;
+      await HandleCommandTypeAsync(BotClient, Update, CancellationToken);
     }
     else
     {
-      SendObject.text = GetMessageByKey(NotIsCommandOrMessage)!;
-      SendObject.replyToMessageId = Update.Message!.MessageId;
+      await HandleMessageTypeAsync(BotClient, Update, CancellationToken);
     }
-
-    await BotClient.SendTextMesageWithObjectAsync(SendObject, CancellationToken);
   }
 }

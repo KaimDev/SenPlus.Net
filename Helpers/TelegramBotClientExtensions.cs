@@ -1,6 +1,6 @@
-using Telegram.Bot;
-
 namespace SenPlus.Helpers;
+
+using Telegram.Bot;
 
 public static class TelegramBotClientExtensions
 {
